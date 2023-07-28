@@ -1,6 +1,6 @@
 ﻿
-using Business.Handlers.Products.Commands;
-using Business.Handlers.Products.Queries;
+using Business.Handlers.Storages.Commands;
+using Business.Handlers.Storages.Queries;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,25 +11,25 @@ using System.Collections.Generic;
 namespace WebAPI.Controllers
 {
     /// <summary>
-    /// Products If controller methods will not be Authorize, [AllowAnonymous] is used.
+    /// Storages If controller methods will not be Authorize, [AllowAnonymous] is used.
     /// </summary>
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    public class ProductsController : BaseApiController
+    public class StoragesController : BaseApiController
     {
         ///<summary>
-        ///List Products
+        ///List Storages
         ///</summary>
-        ///<remarks>Products</remarks>
-        ///<return>List Products</return>
+        ///<remarks>Storages</remarks>
+        ///<return>List Storages</return>
         ///<response code="200"></response>
         [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Product>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Storage>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getall")]
         public async Task<IActionResult> GetList()
         {
-            var result = await Mediator.Send(new GetProductsQuery());
+            var result = await Mediator.Send(new GetStoragesQuery());
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -40,16 +40,16 @@ namespace WebAPI.Controllers
         ///<summary>
         ///It brings the details according to its id.
         ///</summary>
-        ///<remarks>Products</remarks>
-        ///<return>Products List</return>
+        ///<remarks>Storages</remarks>
+        ///<return>Storages List</return>
         ///<response code="200"></response>  
         [Produces("application/json", "text/plain")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Product))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Storage))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpGet("getbyid")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await Mediator.Send(new GetProductQuery { Id = id });
+            var result = await Mediator.Send(new GetStorageQuery { Id = id });
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -58,17 +58,17 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Add Product.
+        /// Add Storage.
         /// </summary>
-        /// <param name="createProduct"></param>
+        /// <param name="createStorage"></param>
         /// <returns></returns>
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] CreateProductCommand createProduct)
+        public async Task<IActionResult> Add([FromBody] CreateStorageCommand createStorage)
         {
-            var result = await Mediator.Send(createProduct);
+            var result = await Mediator.Send(createStorage);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -77,17 +77,17 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Update Product.
+        /// Update Storage.
         /// </summary>
-        /// <param name="updateProduct"></param>
+        /// <param name="updateStorage"></param>
         /// <returns></returns>
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] UpdateProductCommand updateProduct)
+        public async Task<IActionResult> Update([FromBody] UpdateStorageCommand updateStorage)
         {
-            var result = await Mediator.Send(updateProduct);
+            var result = await Mediator.Send(updateStorage);
             if (result.Success)
             {
                 return Ok(result.Message);
@@ -96,17 +96,17 @@ namespace WebAPI.Controllers
         }
 
         /// <summary>
-        /// Delete Product.
+        /// Delete Storage.
         /// </summary>
-        /// <param name="deleteProduct"></param>
+        /// <param name="deleteStorage"></param>
         /// <returns></returns>
         [Produces("application/json", "text/plain")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] DeleteProductCommand deleteProduct)
+        public async Task<IActionResult> Delete([FromBody] DeleteStorageCommand deleteStorage)
         {
-            var result = await Mediator.Send(deleteProduct);
+            var result = await Mediator.Send(deleteStorage);
             if (result.Success)
             {
                 return Ok(result.Message);

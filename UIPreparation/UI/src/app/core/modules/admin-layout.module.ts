@@ -27,7 +27,9 @@ import { TranslateComponent } from '../components/admin/translate/translate.comp
 import { OperationClaimComponent } from '../components/admin/operationclaim/operationClaim.component';
 import { LogDtoComponent } from '../components/admin/log/logDto.component';
 import { MatSortModule } from '@angular/material/sort';
-import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2'; 
+import { ProductComponent } from '../components/admin/product/product.component';
+import { StorageComponent } from '../components/admin/storage/storage.component';
 
 
 // export function layoutHttpLoaderFactory(http: HttpClient) {
@@ -71,7 +73,9 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         LanguageComponent,
         TranslateComponent,
         OperationClaimComponent,
-        LogDtoComponent
+        LogDtoComponent, 
+        ProductComponent,
+        StorageComponent
 
     ]
 })

@@ -12,15 +12,15 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
-using Business.Handlers.Products.ValidationRules;
+using Business.Handlers.Storages.ValidationRules;
 using System;
 
-namespace Business.Handlers.Products.Commands
+namespace Business.Handlers.Storages.Commands
 {
     /// <summary>
     /// 
     /// </summary>
-    public class CreateProductCommand : IRequest<IResult>
+    public class CreateStorageCommand : IRequest<IResult>
     {
 
         public System.DateTime CreatedDate { get; set; }
@@ -29,48 +29,48 @@ namespace Business.Handlers.Products.Commands
         public int LastUpdatedUserId { get; set; }
         public bool Status { get; set; }
         public bool IsDeleted { get; set; }
-        public string Name { get; set; }
-        public string Color { get; set; }
-        public float Size { get; set; }
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public bool IsRSale { get; set; }
 
 
-        public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, IResult>
+        public class CreateStorageCommandHandler : IRequestHandler<CreateStorageCommand, IResult>
         {
-            private readonly IProductRepository _productRepository;
+            private readonly IStorageRepository _storageRepository;
             private readonly IMediator _mediator;
-            public CreateProductCommandHandler(IProductRepository productRepository, IMediator mediator)
+            public CreateStorageCommandHandler(IStorageRepository storageRepository, IMediator mediator)
             {
-                _productRepository = productRepository;
+                _storageRepository = storageRepository;
                 _mediator = mediator;
             }
 
-            [ValidationAspect(typeof(CreateProductValidator), Priority = 1)]
+            [ValidationAspect(typeof(CreateStorageValidator), Priority = 1)]
             [CacheRemoveAspect("Get")]
             [LogAspect(typeof(FileLogger))]
             [SecuredOperation(Priority = 1)]
-            public async Task<IResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+            public async Task<IResult> Handle(CreateStorageCommand request, CancellationToken cancellationToken)
             {
-                var isThereProductRecord = _productRepository.Query().Any(u => u.Name == request.Name && u.IsDeleted==false&& u.Size==request.Size);
+                var isThereStorageRecord = _storageRepository.Query().Any(u => u.ProductId == request.ProductId);
 
-                if (isThereProductRecord == true)
+                if (isThereStorageRecord == true)
                     return new ErrorResult(Messages.NameAlreadyExist);
 
-                var addedProduct = new Product
+                var addedStorage = new Storage
                 {
                     CreatedDate = DateTime.Now,
                     LastUpdatedDate = DateTime.Now,
-                    CreatedUserId =1,
-                    LastUpdatedUserId =1,
+                    CreatedUserId = 1,
+                    LastUpdatedUserId = 1,
                     Status = true,
                     IsDeleted = false,
-                    Name = request.Name,
-                    Color = request.Color,
-                    Size = request.Size,
-
+                    ProductId = request.ProductId,
+                    Quantity = request.Quantity,
+                    IsRSale = request.IsRSale,
+                    
                 };
 
-                _productRepository.Add(addedProduct);
-                await _productRepository.SaveChangesAsync();
+                _storageRepository.Add(addedStorage);
+                await _storageRepository.SaveChangesAsync();
                 return new SuccessResult(Messages.Added);
             }
         }

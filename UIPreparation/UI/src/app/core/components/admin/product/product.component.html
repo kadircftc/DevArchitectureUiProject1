@@ -1,0 +1,176 @@
+﻿<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title ">{{'ProductList'| translate}}</h4>
+            <a *ngIf="checkClaim('CreateProductCommand')" class="pull-right" data-toggle="modal" data-target="#product">
+              <i style="color:white" title="{{'Add'| translate}}" class="far fa-plus-square fa-2x"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>Ara</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                </mat-form-field>
+              </div>
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Id'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.id}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Name'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.name}}</td>
+                </ng-container>
+                <ng-container matColumnDef="color">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Color'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.color}}</td>
+                </ng-container>
+                <ng-container matColumnDef="size">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Size'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.size}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="createdDate">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedDate'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.createdDate}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="lastUpdatedDate">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'LastUpdatedDate'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.lastUpdatedDate}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="createdUserId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedUserId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.createdUserId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="lastUpdatedUserId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'LastUpdatedUserId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.lastUpdatedUserId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Status'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="element.status" [disabled]="true"></mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="isDeleted">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'IsDeleted'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="element.isDeleted" [disabled]="true"></mat-checkbox>
+                  </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="update">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell *matCellDef="let element">
+                    <a *ngIf="checkClaim('UpdateProductCommand')" data-toggle="modal" data-target="#product"
+                      (click)="getProductById(element.id)">
+                      <i title="{{'Update'| translate}}" style="color:#ff5722;" class="far fa-edit"></i>
+                    </a>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell *matCellDef="let element">
+                    <a *ngIf="checkClaim('DeleteProductCommand')" (confirm)="deleteProduct(element.id)"
+                      [swal]="deleteSwal"><i title="{{'Delete'| translate}}" style="color: #D9534E;"
+                        class="fas fa-trash-alt"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                  <td class="mat-cell" colspan="4">{{'NoRecordsFound' |translate}} "{{input.value}}"</td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal modal-angular fade" id="product" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(productAddForm)"><span aria-hidden="true">&times;</span></button>
+        <h4 class="margin-top">
+          {{'ProductForm'| translate}}
+        </h4>
+        <div class="separator"></div>
+        <form *ngIf="productAddForm" [formGroup]="productAddForm" (ngSubmit)="save()">
+
+
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="name" type="text" id="name" name="name" formControlName="name" />
+                <div class="alert alert-danger"
+                  *ngIf="productAddForm.get('name')!.hasError('name') && productAddForm.get('name')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="color" type="text" id="color" name="color" formControlName="color" />
+                <div class="alert alert-danger"
+                  *ngIf="productAddForm.get('color')!.hasError('color') && productAddForm.get('color')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="size" type="text" id="size" name="size" formControlName="size" />
+                <div class="alert alert-danger"
+                  *ngIf="productAddForm.get('size')!.hasError('size') && productAddForm.get('size')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-2">
+              <mat-checkbox formControlName="status" id="status" name="status"> status
+              </mat-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-2">
+              <mat-checkbox formControlName="isDeleted" id="isDeleted" name="isDeleted"> isDeleted
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon="error" [showCancelButton]="true"
+  [confirmButtonText]="'OK'" [cancelButtonText]="'Cancel'">
+</swal>
