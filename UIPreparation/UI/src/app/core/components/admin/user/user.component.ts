@@ -51,6 +51,7 @@ export class UserComponent implements AfterViewInit, OnInit {
   groupDropdownList: LookUp[];
   groupSelectedItems: LookUp[];
   dropdownSettings: IDropdownSettings;
+ 
 
   claimDropdownList: LookUp[];
   claimSelectedItems: LookUp[];

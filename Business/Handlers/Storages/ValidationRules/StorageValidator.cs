@@ -10,7 +10,8 @@ namespace Business.Handlers.Storages.ValidationRules
         public CreateStorageValidator()
         {
             RuleFor(x => x.Quantity).NotEmpty();
-            RuleFor(x => x.IsRSale).NotEmpty();
+            RuleFor(x => x.ProductId).NotEmpty();
+            RuleFor(x => x.IsRSale);
 
         }
     }
@@ -19,7 +20,8 @@ namespace Business.Handlers.Storages.ValidationRules
         public UpdateStorageValidator()
         {
             RuleFor(x => x.Quantity).NotEmpty();
-            RuleFor(x => x.IsRSale).NotEmpty();
+            RuleFor(x => x.ProductId).NotEmpty();
+            RuleFor(x => x.IsRSale);
 
         }
     }

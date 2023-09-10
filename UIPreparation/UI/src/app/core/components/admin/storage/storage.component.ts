@@ -8,10 +8,10 @@ import { LookUpService } from 'app/core/services/lookUp.service';
 import { AuthService } from 'app/core/components/admin/login/services/auth.service';
 import { Storage } from './models/Storage';
 import { StorageService } from './services/Storage.service';
-import { environment } from 'environments/environment';
 import { Product } from '../product/models/Product';
-import { LookUp } from 'app/core/models/lookUp';
 import { ProductService } from '../product/services/Product.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 declare var jQuery: any;
 
@@ -22,19 +22,23 @@ declare var jQuery: any;
 })
 export class StorageComponent implements AfterViewInit, OnInit {
 
+	productName$: Observable<string>;
+
 	dataSource: MatTableDataSource<any>;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 	@ViewChild(MatSort) sort: MatSort;
-	displayedColumns: string[] = ['id', 'createdDate', 'lastUpdatedDate', 'createdUserId', 'lastUpdatedUserId', 'status', 'isDeleted', 'productId', 'quantity', 'isRSale', 'update', 'delete'];
+	displayedColumns: string[] = ['id', 'productId', 'quantity', 'isRSale', 'status', 'isDeleted','confirmationIsReady', 'update', 'delete'];
 
 	storageList: Storage[];
-
 	storage: Storage = new Storage();
 	productList: Product[];
+	product: Product[];
+	filterIsReady:boolean=true;
 
+	
 	storageAddForm: FormGroup;
 
-
+	productname: Product[];
 	storageId: number;
 
 	constructor(private storageService: StorageService, private productService: ProductService, private lookupService: LookUpService, private alertifyService: AlertifyService, private formBuilder: FormBuilder, private authService: AuthService) { }
@@ -45,20 +49,63 @@ export class StorageComponent implements AfterViewInit, OnInit {
 
 	ngOnInit() {
 		this.productService.getProductList().subscribe(data => {
-			this.productList = data;
+			this.productList = data.filter(item=>!item.isDeleted);
 		})
-
 		this.createStorageAddForm();
 	}
-
-
-	getStorageList() {
-		this.storageService.getStorageList().subscribe(data => {
-			this.storageList = data;
-			this.dataSource = new MatTableDataSource(data);
-			this.configDataTable();
-		});
+	filterConfirmationOrder() {
+		if (this.filterIsReady == false) {
+			this.filterIsReady = true;
+		}
+		else {
+			this.filterIsReady = false;
+		}
+		this.getStorageList();
 	}
+	
+
+	getProductName(id: number): string {
+		const product = this.productList.find(item => item.id === id);
+		if (product) {
+			return `${product.name}, Beden: ${product.size}, Renk: ${product.color}`;
+		  }
+	  }
+
+	  setIsReady(id:number){
+		var index = this.storageList.findIndex(x => x.id === id);
+
+		let sd = this.storageList.find(item => item.id === id);
+
+		if (sd.isRSale === false) {
+			sd.isRSale = true;
+		} else {
+			sd.isRSale = false;
+		}
+
+		this.storageList[index] = sd;
+
+		this.storageService.updateStorage(sd).subscribe(data => {
+			this.alertifyService.success(data);
+			this.dataSource = new MatTableDataSource(this.storageList);
+			this.configDataTable();
+			this.getStorageList();
+		});
+	  }
+
+	  getStorageList() {
+		this.storageService.getStorageList().subscribe(data => {
+		  this.storageList = data.filter(item => !item.isDeleted&&item.isRSale===this.filterIsReady);
+	  
+		 
+		  const validProductIds = this.productList.filter(product => !product.isDeleted).map(product => product.id);
+	  
+		 
+		  this.storageList = this.storageList.filter(storage => validProductIds.includes(storage.productId));
+	  
+		  this.dataSource = new MatTableDataSource(this.storageList);
+		  this.configDataTable();
+		});
+	  }
 
 	save() {
 
@@ -80,6 +127,7 @@ export class StorageComponent implements AfterViewInit, OnInit {
 			this.storage = new Storage();
 			jQuery('#storage').modal('hide');
 			this.alertifyService.success(data);
+		
 			this.clearFormGroup(this.storageAddForm);
 
 		})
@@ -106,10 +154,11 @@ export class StorageComponent implements AfterViewInit, OnInit {
 	createStorageAddForm() {
 		this.storageAddForm = this.formBuilder.group({
 			id: [0],
-			
+			status:[false],
 			productId: [0, Validators.required],
 			quantity: [0, Validators.required],
-			isRSale: [false, Validators.required]
+			isRSale: [false]
+
 		})
 	}
 

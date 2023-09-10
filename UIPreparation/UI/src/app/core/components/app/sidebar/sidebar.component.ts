@@ -20,11 +20,15 @@ export const ADMINROUTES: RouteInfo[] = [
   { path: '/language', title: 'Languages', icon:'language', class: '', claim:"GetLanguagesQuery" },
   { path: '/translate', title: 'TranslateWords', icon: 'translate', class: '', claim: "GetTranslatesQuery" },
   { path: '/log', title: 'Logs', icon: 'update', class: '', claim: "GetLogDtoQuery" },
-  { path: '/product', title: 'Products', icon: 'update', class: '', claim: "GetProductsQuery" },
-  { path: '/storage', title: 'Storages', icon: 'update', class: '', claim: "GetStoragesQuery" }
+  { path: '/product', title: 'Products', icon: 'store', class: '', claim: "GetProductsQuery" },
+  { path: '/storage', title: 'Storages', icon: 'inventory', class: '', claim: "GetStoragesQuery" },
+  { path: '/order', title: 'Orders', icon: 'update', class: '', claim: "GetOrdersQuery" },
+  { path: '/customer', title: 'Customers', icon: 'update', class: '', claim: "GetCustomersQuery" }
+
 ];
 
 export const USERROUTES: RouteInfo[] = [ 
+  
 ];
 
 @Component({

@@ -22,7 +22,7 @@ export class ProductComponent implements AfterViewInit, OnInit {
 	dataSource: MatTableDataSource<any>;
 	@ViewChild(MatPaginator) paginator: MatPaginator;
 	@ViewChild(MatSort) sort: MatSort;
-	displayedColumns: string[] = ['id', 'name', 'color', 'size', 'createdDate', 'lastUpdatedDate', 'createdUserId', 'lastUpdatedUserId', 'status', 'isDeleted', 'update', 'delete'];
+	displayedColumns: string[] = ['id', 'name', 'color', 'size','status', 'isDeleted', 'update', 'delete'];
 
 	productList: Product[];
 	product: Product = new Product();
@@ -36,18 +36,19 @@ export class ProductComponent implements AfterViewInit, OnInit {
 
 	ngAfterViewInit(): void {
 		this.getProductList();
+		
 	}
 
 	ngOnInit() {
-
 		this.createProductAddForm();
 	}
 
 
 	getProductList() {
 		this.productService.getProductList().subscribe(data => {
-			this.productList = data;
-			this.dataSource = new MatTableDataSource(data);
+			
+			this.productList = data.filter(item => !item.isDeleted);
+			this.dataSource = new MatTableDataSource(this.productList);
 			this.configDataTable();
 		});
 	}

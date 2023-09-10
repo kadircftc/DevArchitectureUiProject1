@@ -1,0 +1,230 @@
+﻿<div class="main-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-danger">
+            <h4 class="card-title ">{{'OrderList'| translate}}</h4>
+            <a *ngIf="checkClaim('CreateOrderCommand')" class="pull-right" data-toggle="modal" data-target="#order"> <i
+                style="color:white" title="{{'Add'| translate}}" class="far fa-plus-square fa-2x"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+
+              <div class="col-md-4 pull-right">
+                <mat-form-field>
+                  <mat-label>Ara</mat-label>
+                  <input matInput (keyup)="applyFilter($event)" placeholder="" #input>
+                </mat-form-field>
+              </div>
+              <div class="col-md-4 pull-left">
+                <button class="btn btn-success" (click)="filterConfirmationOrder()"  *ngIf="confirmation==false"> Onaylanan Siparişleri Göster</button>
+                <button class="btn btn-danger" (click)="filterConfirmationOrder()"  *ngIf="confirmation==true"> Onaylanmamış Siparişleri Göster</button>
+              </div>
+
+              <table mat-table [dataSource]="dataSource" matSort>
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Id'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.id}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="createdDate">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Sipariş Tarihi'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.createdDate|date:'dd.MM.yyyy HH.mm'}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="lastUpdatedDate">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'LastUpdatedDate'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.lastUpdatedDate|date:'dd.MM.yyyy HH.mm'}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="createdUserId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'CreatedUserId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.createdUserId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="userName">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Kullanıcı'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{getUserName(element.createdUserId)}}
+                   <button class="btn btn-sm bg-primary" (click)="openUserInfo()" *ngIf="showForm==false"><i class="fa fa-info" aria-hidden="true"></i></button>
+                   <button class="btn btn-sm bg-danger" (click)="closeUserInfo()" *ngIf="showForm==true"><i class="fa fa-close" aria-hidden="true"></i> Gizle</button>
+                   <div *ngIf="showForm" [@fadeInOut] class="card" style="width: 15rem;">
+                    <div class="card-body">
+                      <h5 >{{getUserDetail(element.createdUserId)}}</h5>
+                      
+                    </div>
+                  </div>
+                  </td>
+                  
+                </ng-container>
+
+                <ng-container matColumnDef="lastUpdatedUserId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'LastUpdatedUserId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.lastUpdatedUserId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Status'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="element.status" [disabled]="true"></mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="isDeleted">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'IsDeleted'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="element.isDeleted" [disabled]="true"></mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="userId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'UserId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.userId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="productId">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ProductId'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.productId}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="productQuantity">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ProductQuantity'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.productQuantity}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="productName">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'ProductInfo'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{getProductName(element.productId)}}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="confirmation">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Confirmation'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="element.confirmation" [disabled]="true"></mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="confirmationSet">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Sipariş Onayı'|translate}}</th>
+                  <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button color="primary" [swal]="setConfirmation" (confirm)="setOrderConfirmation(element.id)">
+                      <mat-icon class="btn btn-success p-1" *ngIf="element.confirmation==false">Siparişi Onayla</mat-icon>
+                      <mat-icon class="btn btn-primary p-1" *ngIf="element.confirmation==true">Siparişi İptal Et</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+               
+
+                <ng-container matColumnDef="update">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell *matCellDef="let element">
+                    <a *ngIf="checkClaim('UpdateOrderCommand')" data-toggle="modal" data-target="#order"
+                      (click)="getOrderById(element.id)">
+                      <i title="{{'Update'| translate}}" style="color:#ff5722;" class="far fa-edit"></i>
+                    </a>
+                  </td>
+                </ng-container>
+
+
+
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef></th>
+                  <td style="width: 25px;" mat-cell *matCellDef="let element">
+                    <a *ngIf="checkClaim('DeleteOrderCommand')" (confirm)="deleteOrder(element.id)"
+                      [swal]="deleteSwal"><i title="{{'Delete'| translate}}" style="color: #D9534E;"
+                        class="fas fa-trash-alt"></i></a>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <tr class="mat-row" *matNoDataRow style="text-align: center;">
+                  <td class="mat-cell" colspan="4">{{'NoRecordsFound' |translate}} "{{input.value}}"</td>
+                </tr>
+              </table>
+              <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal modal-angular fade" id="order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+          (click)="clearFormGroup(orderAddForm)"><span aria-hidden="true">&times;</span></button>
+        <h4 class="margin-top">
+          {{'OrderForm'| translate}}
+        </h4>
+        <div class="separator"></div>
+        <form *ngIf="orderAddForm" [formGroup]="orderAddForm" (ngSubmit)="save()">
+
+
+          <div class="row">
+            <div class="col-md-12">
+              <select class="browser-default custom-select" formControlName="productId">
+                <option *ngFor="let item of storageList" [value]="item.productId">{{getProductName(item.productId)}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-12">
+              <mat-form-field class="example-full-width">
+                <input matInput placeholder="productQuantity" type="text" id="productQuantity" name="productQuantity"
+                  formControlName="productQuantity" />
+                <div class="alert alert-danger"
+                  *ngIf="orderAddForm.get('productQuantity')!.hasError('productQuantity') && orderAddForm.get('productQuantity')!.dirty">
+                </div>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col col-md-2">
+              <mat-checkbox formControlName="status" id="status" name="status"> status
+              </mat-checkbox>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-md-2">
+              <mat-checkbox formControlName="isDeleted" id="isDeleted" name="isDeleted"> isDeleted
+              </mat-checkbox>
+            </div>
+          </div>
+
+
+
+          <div class="row">
+            <div class="col col-md-2">
+              <mat-checkbox formControlName="confirmation" id="confirmation" name="confirmation"> Confirmation
+              </mat-checkbox>
+            </div>
+          </div>
+
+          
+          <button mat-raised-button type="submit" class="btn btn-danger pull-right">{{'Save'|translate}}</button>
+          <div class="clearfix"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<swal #deleteSwal title="{{'DeleteConfirm' | translate}}" icon="error" [showCancelButton]="true"
+  [confirmButtonText]="'OK'" [cancelButtonText]="'Cancel'">
+</swal>
+
+<swal  #setConfirmation  title="{{'İşlemi Onaylamak İstediğinize Emin Misiniz?' | translate}}" icon="success" [showCancelButton]="true"
+  [confirmButtonText]="'Evet'" [cancelButtonText]="'İptal'">
+</swal>
+

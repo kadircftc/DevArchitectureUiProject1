@@ -30,6 +30,8 @@ import { MatSortModule } from '@angular/material/sort';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2'; 
 import { ProductComponent } from '../components/admin/product/product.component';
 import { StorageComponent } from '../components/admin/storage/storage.component';
+import { OrderComponent } from '../components/admin/order/order.component';
+import { CustomerComponent } from '../components/admin/customer/customer.component';
 
 
 // export function layoutHttpLoaderFactory(http: HttpClient) {
@@ -75,7 +77,9 @@ import { StorageComponent } from '../components/admin/storage/storage.component'
         OperationClaimComponent,
         LogDtoComponent, 
         ProductComponent,
-        StorageComponent
+        StorageComponent,
+        OrderComponent,
+        CustomerComponent
 
     ]
 })

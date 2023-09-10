@@ -3,6 +3,7 @@ using Business.Constants;
 using Business.DependencyResolvers;
 using Business.Fakes.DArch;
 using Business.Services.Authentication;
+using Business.Services.UserService;
 using Core.CrossCuttingConcerns.Caching;
 using Core.CrossCuttingConcerns.Caching.Microsoft;
 using Core.DependencyResolvers;
@@ -76,6 +77,9 @@ namespace Business
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(typeof(BusinessStartup).GetTypeInfo().Assembly);
 
+            services.AddHttpContextAccessor();
+            services.AddScoped<IUserService, UserService>();
+
             ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression) =>
             {
                 return memberInfo.GetCustomAttribute<DisplayAttribute>()
@@ -90,6 +94,8 @@ namespace Business
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IStorageRepository, StorageRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<ILogRepository, LogRepository>();
@@ -115,6 +121,8 @@ namespace Business
         public void ConfigureStagingServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IStorageRepository, StorageRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<ILogRepository, LogRepository>();
@@ -139,6 +147,8 @@ namespace Business
         public void ConfigureProductionServices(IServiceCollection services)
         {
             ConfigureServices(services);
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IStorageRepository, StorageRepository>();
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<ILogRepository, LogRepository>();

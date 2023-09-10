@@ -50,9 +50,9 @@ namespace Business.Handlers.Storages.Commands
             [SecuredOperation(Priority = 1)]
             public async Task<IResult> Handle(CreateStorageCommand request, CancellationToken cancellationToken)
             {
-                var isThereStorageRecord = _storageRepository.Query().Any(u => u.ProductId == request.ProductId);
+                var isThereStorageRecord = await _storageRepository.GetAsync(u => u.ProductId == request.ProductId&&u.IsDeleted==false);
 
-                if (isThereStorageRecord == true)
+                if (isThereStorageRecord != null)
                     return new ErrorResult(Messages.NameAlreadyExist);
 
                 var addedStorage = new Storage

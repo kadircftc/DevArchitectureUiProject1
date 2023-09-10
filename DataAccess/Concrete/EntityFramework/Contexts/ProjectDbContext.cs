@@ -52,7 +52,10 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
         public DbSet<Translate> Translates { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Storage> Storages { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Customer> Customers { get; set; }
        
+
 
         protected IConfiguration Configuration { get; }
 
